@@ -4,7 +4,7 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const { adminAuth, userAuth } = require("./middleware/auth.js");
 const mongoose = require('mongoose')
-const PORT = 5000;
+const PORT = 7000;
 const ShortURL = require('./models/url')
 const ExpandUrl = require('./models/expandedUrl')
 app.set("view engine", "ejs");
@@ -115,7 +115,7 @@ mongoose.connect('mongodb+srv://chat:7T0suyy3YPwjKBbV@cluster0.gqpayy9.mongodb.n
 })
 
 mongoose.connection.on('open', async () => {
-	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT || PORT || 5005, () => {
+	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT || PORT, () => {
 		console.log('Server started')
 		process.on("unhandledRejection", (err) => {
 			console.log(`An error occurred: ${err.message}`);
