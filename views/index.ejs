@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+	<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.js"
+		integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+	<title>URL Shortner Project</title>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg  navbar-dark bg-primary">
+		<span class="navbar-brand mb-0 h1">Shortly</span>
+		<div class="ml-auto" style="display: flex; gap:10px">
+			<div style="color: white;">Username (Role)<br><%= userName %> (<%= role %>)</div>
+			<button class="logout btn btn-danger"> <a style="color: white; " href="/logout">Log Out</a></button>
+		</div>
+	</nav>
+	<div class="container">
+		<div style="display: flex; flex-direction: column;">
+			<div>
+				<ul style="list-style: none"></ul>
+			</div>
+		</div>
+		<form action="/short" method="POST" class="my-4 form-inline">
+			<label for="fullUrl" class="sr-only">URL</label>
+			<input required placeholder="URL" type="url" name="fullUrl" id="fullUrl" class="form-control col mr-2" />
+			<input type="text" name="user" value="<%= userName %>" hidden="hidden" />
+			<button class="btn btn-success" type="submit">Shrink This!</button>
+		</form>
+		<form action="/expand" method="POST" class="my-4 form-inline">
+			<label for="ExpandUrl" class="sr-only">URL</label>
+			<input required placeholder="Enter Short URL ID here (for example 'C3EDUVj6p')" type="text" name="ExpandUrl"
+				id="ExpandUrl" class="form-control col mr-2" />
+			<button class="btn btn-success" type="submit">Expand This!</button>
+		</form>
+		<table class="table table-striped table-responsive">
+			<thead>
+				<tr>
+					<th>Expanded URL will be in the below table once Expand This button is clicked.</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% code.forEach(shortUrl=> { %>
+					<tr>
+						<td style="line-break: anywhere;"><a href="<%= shortUrl.full %>">
+								<%= shortUrl.full %>
+							</a></td>
+					</tr>
+					<% }) %>
+			</tbody>
+		</table>
+		<h6>Note: Long press on Short URL column list data or right click for desktop users to copy the whole link.</h6>
+		<h6>How it works? Watch here <a href="https://www.youtube.com/embed/BB3JgCOnSyg">Youtube</a></h6>
+		<table style="margin-top: 20px;" class="table table-striped table-responsive">
+			<thead>
+				<tr>
+					<th>Full URL</th>
+					<th>Short URL</th>
+					<th>Clicks</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% shortUrls.forEach(shortUrl=> { %>
+					<tr>
+						<td style="line-break: anywhere;"><a href="<%= shortUrl.full %>">
+								<%= shortUrl.full %>
+							</a></td>
+						<td style="white-space: nowrap;"><a id="short" href="<%= shortUrl.short %>">
+								<%= shortUrl.short %>
+							</a></td>
+						<td>
+							<%= shortUrl.clicks %>
+						</td>
+						<td>
+							<form action="/delete" method="POST">
+								<input type="hidden" value="<%= shortUrl.short %>" id="deletedata" name="deletedata">
+								<button type="submit" class="btn-close btn btn-danger"
+									aria-label="Close">Delete</button>
+							</form>
+
+						</td>
+					</tr>
+					<% }) %>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>
