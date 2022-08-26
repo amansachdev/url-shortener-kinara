@@ -1,15 +1,13 @@
+require('dotenv').config();
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const { adminAuth, userAuth } = require("./middleware/auth.js");
-const mongoose = require('mongoose')
 const PORT = 7000;
-const ShortURL = require('./models/url')
-const ExpandUrl = require('./models/expandedUrl')
-const username = encodeURIComponent("chat");
-const password = encodeURIComponent("7T0suyy3YPwjKBbV");
-const cluster = "cluster0.gqpayy9.mongodb.net";
-const databaseUrl = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
+const ShortURL = require('./model/url')
+const ExpandUrl = require('./model/expandedUrl')
+mongoose = require('mongoose')
+const connectDB = require("./config/database");
 
 code = [{
 	full: '/'
@@ -20,7 +18,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }))
 
 // Routes
-app.use("/api/auth", require("./Auth/route"));
+app.use("/api/auth", require("./routes/route"));
 app.use(express.static(__dirname + '/views/public'));
 
 app.set("view engine", "ejs");
@@ -38,10 +36,11 @@ app.get('/basic', userAuth, async (req, res) => {
 	res.render('index', { shortUrls: allData, userName: req.userName, role: req.role })
 })
 
-app.post('/short', async (req, res) => {
+app.post('/short', userAuth, async (req, res) => {
 	// Grab the fullUrl parameter from the req.body
+	console.log(req.userName)
 	const fullUrl = req.body.fullUrl;
-	const userName = req.body.user;
+	const userName = req.userName;
 	// insert and wait for the record to be inserted using the model
 	const record = new ShortURL({
 		full: fullUrl,
@@ -110,10 +109,8 @@ app.get('/:shortid', async (req, res) => {
 	res.redirect(rec.full)
 })
 
-mongoose.connect(databaseUrl, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-});
+//Connection to database
+connectDB();
 
 mongoose.connection.on('open', async () => {
 	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT || PORT, () => {
