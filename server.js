@@ -1,5 +1,4 @@
 const express = require("express");
-const connectDB = require("./db");
 const app = express();
 const cookieParser = require("cookie-parser");
 const { adminAuth, userAuth } = require("./middleware/auth.js");
@@ -7,12 +6,15 @@ const mongoose = require('mongoose')
 const PORT = 7000;
 const ShortURL = require('./models/url')
 const ExpandUrl = require('./models/expandedUrl')
-app.set("view engine", "ejs");
+const username = encodeURIComponent("chat");
+const password = encodeURIComponent("7T0suyy3YPwjKBbV");
+const cluster = "cluster0.gqpayy9.mongodb.net";
+const databaseUrl = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
+
 code = [{
 	full: '/'
-}]	
-newtext = 'text';
-connectDB();
+}]
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }))
@@ -21,6 +23,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use("/api/auth", require("./Auth/route"));
 app.use(express.static(__dirname + '/views/public'));
 
+app.set("view engine", "ejs");
 app.get("/home", (req, res) => res.render("home"));
 app.get("/register", (req, res) => res.render("register"));
 app.get("/login", (req, res) => res.render("login"));
@@ -30,9 +33,8 @@ app.get("/logout", (req, res) => {
 	res.redirect("/");
 });
 app.get("/admin", adminAuth, (req, res) => res.render("admin"));
-
 app.get('/basic', userAuth, async (req, res) => {
-	const allData = await ShortURL.find({user: req.userName}).exec();
+	const allData = await ShortURL.find({ user: req.userName }).exec();
 	res.render('index', { shortUrls: allData, userName: req.userName, role: req.role })
 })
 
@@ -45,7 +47,7 @@ app.post('/short', async (req, res) => {
 		full: fullUrl,
 		user: userName
 	})
-	
+
 	await record.save()
 
 	res.redirect('/basic')
@@ -54,7 +56,7 @@ app.post('/short', async (req, res) => {
 app.post('/expand', async (req, res) => {
 	const shorten = req.body.ExpandUrl;
 	// const userName = req.body.user;
-	
+
 	const rec = await ShortURL.findOne({
 		short: shorten
 	})
@@ -62,21 +64,21 @@ app.post('/expand', async (req, res) => {
 	if (!rec) {
 		res.render('expand', { errormessage: 'your message no url found' });
 		console.log("No URl found")
-	}else{
-	const expandUrl = new ExpandUrl(
-		{
-			full: rec.full
-		}
-	)
-	await expandUrl.save();
-	demo = await ExpandUrl.findOne(
-		{
-			full: rec.full
-		}
-	);
-	if (!demo) return res.sendStatus(404)
-	code.push(demo)
-	res.redirect('/basic')
+	} else {
+		const expandUrl = new ExpandUrl(
+			{
+				full: rec.full
+			}
+		)
+		await expandUrl.save();
+		demo = await ExpandUrl.findOne(
+			{
+				full: rec.full
+			}
+		);
+		if (!demo) return res.sendStatus(404)
+		code.push(demo)
+		res.redirect('/basic')
 	}
 })
 
@@ -108,11 +110,10 @@ app.get('/:shortid', async (req, res) => {
 	res.redirect(rec.full)
 })
 
-// Setup your mongodb connection here
-mongoose.connect('mongodb+srv://chat:7T0suyy3YPwjKBbV@cluster0.gqpayy9.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(databaseUrl, {
 	useNewUrlParser: true,
-	useUnifiedTopology: true
-})
+	useUnifiedTopology: true,
+});
 
 mongoose.connection.on('open', async () => {
 	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT || PORT, () => {
