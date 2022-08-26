@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const { adminAuth, userAuth } = require("./middleware/auth.js");
-const PORT = 7000;
 const ShortURL = require('./model/url')
 const ExpandUrl = require('./model/expandedUrl')
 mongoose = require('mongoose')
@@ -38,7 +37,6 @@ app.get('/basic', userAuth, async (req, res) => {
 
 app.post('/short', userAuth, async (req, res) => {
 	// Grab the fullUrl parameter from the req.body
-	console.log(req.userName)
 	const fullUrl = req.body.fullUrl;
 	const userName = req.userName;
 	// insert and wait for the record to be inserted using the model
@@ -46,20 +44,17 @@ app.post('/short', userAuth, async (req, res) => {
 		full: fullUrl,
 		user: userName
 	})
-
 	await record.save()
-
 	res.redirect('/basic')
 })
 
-app.post('/expand', async (req, res) => {
+app.post('/expand', userAuth, async (req, res) => {
 	const shorten = req.body.ExpandUrl;
 	// const userName = req.body.user;
 
 	const rec = await ShortURL.findOne({
 		short: shorten
 	})
-	console.log(rec)
 	if (!rec) {
 		res.render('expand', { errormessage: 'your message no url found' });
 		console.log("No URl found")
@@ -82,7 +77,7 @@ app.post('/expand', async (req, res) => {
 })
 
 
-app.post('/delete', async (req, res) => {
+app.post('/delete', userAuth, async (req, res) => {
 	const shorten = req.body.deletedata
 
 	const rec = await ShortURL.deleteOne({
@@ -113,7 +108,7 @@ app.get('/:shortid', async (req, res) => {
 connectDB();
 
 mongoose.connection.on('open', async () => {
-	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT || PORT, () => {
+	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT, () => {
 		console.log('Server started')
 		process.on("unhandledRejection", (err) => {
 			console.log(`An error occurred: ${err.message}`);
