@@ -104,16 +104,12 @@ app.get('/:shortid', async (req, res) => {
 	res.redirect(rec.full)
 })
 
-//Connection to database
-connectDB();
-
-mongoose.connection.on('open', async () => {
-	const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT, () => {
-		console.log('Server started')
-		process.on("unhandledRejection", (err) => {
-			console.log(`An error occurred: ${err.message}`);
-			server.close(() => process.exit(1));
-		});
-	})
+const server = app.listen(process.env.PORT || process.env.PUBLIC_PORT, () => {
+	//Connection to database
+	connectDB();
+	console.log(`server is running at port no ${process.env.PORT}`);
+	process.on("unhandledRejection", (err) => {
+		console.log(`An error occurred: ${err.message}`);
+		server.close(() => process.exit(1));
+	});
 })
-
