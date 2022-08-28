@@ -1,8 +1,23 @@
 #### API Documentation
+Note new changes require a authorization header attached
+
+> **/api/auth/update**
+
+Link - https://documenter.getpostman.com/view/20664824/VUxKT9DC
+
+![image](https://user-images.githubusercontent.com/46645259/187074238-5146ad3f-51cc-4241-b3eb-f41f2ce81fb6.png)
+
 > **/short** 
 1. Takes the fullUrl parameter from the req.body and insert then wait for the record to be inserted using the model.
 
-Example of POSTMAN
+POSTMAN
+
+After New Changes
+
+![image](https://user-images.githubusercontent.com/46645259/187074718-9ba75d59-65d3-4150-ad80-988097df82b4.png)
+
+Old functionality
+
 ![image](https://user-images.githubusercontent.com/46645259/186361927-9e1bf319-753f-41ac-a5e0-27df0abe057c.png)
 
 > **/expand** 
@@ -13,6 +28,7 @@ Example of POSTMAN
 > **/delete** 
 1. Removes the particular record from the database.
 2. Requires the shortURL ID to be passed. 
+3. Requires the auth header.
 
 #### Testing using mocha
 1. npm run test
