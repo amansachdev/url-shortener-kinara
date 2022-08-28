@@ -1,10 +1,10 @@
 const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const jwtSecret = process.env.KEY;
+
 exports.register = async (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
   if (password.length < 6) {
     return res.status(400).json({ message: "Password less than 6 characters" });
   }
@@ -12,6 +12,7 @@ exports.register = async (req, res, next) => {
     await User.create({
       username,
       password: hash,
+      role: role
     })
       .then((user) => {
         const maxAge = 3 * 60 * 60;
@@ -34,7 +35,7 @@ exports.register = async (req, res, next) => {
       })
       .catch((error) =>
         res.status(400).json({
-          message: "User not successful created",
+          message: "User not successful created, Username already exists",
           error: error.message,
         })
       );
@@ -94,13 +95,17 @@ exports.login = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-  const { role, id } = req.body;
-  // Verifying if role and id is presnt
-  if (role && id) {
+  const { role, id, username} = req.body;
+  // Verifying if role and id is present
+  if (role && id && username) {
     // Verifying if the value of role is admin
-    if (role === "admin") {
+    if (role === "admin" || role === "Admin") {
       // Finds the user with the id
-      await User.findById(id)
+      await User.findOne(
+        {
+          username:username
+        }
+      )
         .then((user) => {
           // Verifies the user is not an admin
           if (user.role !== "admin") {

@@ -1,7 +1,7 @@
 {
   "name": "url-shortner",
   "version": "1.0.0",
-  "description": "User Role Authentication",
+  "description": "User Role Authentication and Url shortner",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",

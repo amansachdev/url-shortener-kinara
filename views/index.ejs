@@ -19,7 +19,14 @@
 			<div style="color: white;">Username (Role)<br>
 				<%= userName %> (<%= role %>)
 			</div>
-			<a class="logout btn btn-danger" role="button" style="color: white; " href="/logout">Log Out</a>
+			<form action="/admin">
+				<button type="submit" class="logout btn btn-secondary" role="button" style="color: white; ">Update
+					User</button>
+			</form>
+			<form action="/logout">
+				<button type="submit" class="logout btn btn-danger" role="button" style="color: white; ">Log
+					Out</button>
+			</form>
 		</div>
 	</nav>
 	<div class="container">
