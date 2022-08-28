@@ -41,7 +41,15 @@ exports.adminAuth = (req, res, next) => {
   }
 };
 exports.userAuth = (req, res, next) => {
-  const token = req.cookies.jwt;
+  notNull = (req)=>{
+    if (req.cookies.jwt){
+      return req.cookies.jwt;
+    }else{
+      // returns jwt token from a postman request authorization
+      return extractToken(req)
+    }
+  }
+  const token = notNull(req);
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
       if (err) {
